@@ -1,0 +1,114 @@
+{
+  "$comment": "Machine-readable model catalog for Talk to Docs. Verified May 2026. See RESEARCH.md for sources.",
+  "providers": {
+    "openai": {
+      "display_name": "OpenAI",
+      "logo": "/logos/openai.svg",
+      "auth": "direct",
+      "sdk_package": "openai",
+      "key_format": "sk-...",
+      "key_prefix": "sk-",
+      "header_name": "X-LLM-Key",
+      "provider_header_value": "openai",
+      "models": [
+        {
+          "id": "gpt-4o",
+          "display": "GPT-4o",
+          "description": "fast and balanced",
+          "context_window": 128000
+        },
+        {
+          "id": "gpt-4o-mini",
+          "display": "GPT-4o mini",
+          "description": "cheap and fast",
+          "context_window": 128000
+        }
+      ]
+    },
+    "anthropic": {
+      "display_name": "Anthropic",
+      "logo": "/logos/anthropic.svg",
+      "auth": "direct",
+      "sdk_package": "@anthropic-ai/sdk",
+      "key_format": "sk-ant-...",
+      "key_prefix": "sk-ant-",
+      "header_name": "X-LLM-Key",
+      "provider_header_value": "anthropic",
+      "id_format_note": "Direct Anthropic API uses DASH between major and minor (claude-opus-4-7). Vercel Gateway uses DOT (anthropic/claude-opus-4.7). Do not confuse them.",
+      "models": [
+        {
+          "id": "claude-haiku-4-5",
+          "display": "Claude Haiku 4.5",
+          "description": "fast, cheap",
+          "alias_resolves_to": "claude-haiku-4-5-20251001",
+          "context_window": 200000
+        },
+        {
+          "id": "claude-sonnet-4-6",
+          "display": "Claude Sonnet 4.6",
+          "description": "balanced default",
+          "alias_resolves_to": "claude-sonnet-4-6",
+          "context_window": 200000
+        },
+        {
+          "id": "claude-opus-4-7",
+          "display": "Claude Opus 4.7",
+          "description": "best quality, slower",
+          "alias_resolves_to": "claude-opus-4-7",
+          "context_window": 200000
+        }
+      ]
+    },
+    "vercel": {
+      "display_name": "Vercel AI Gateway",
+      "logo": "/logos/vercel.svg",
+      "auth": "gateway",
+      "sdk_package": "ai",
+      "gateway_provider_package": "@ai-sdk/gateway",
+      "key_format": "vck_...",
+      "key_prefix": "vck_",
+      "header_name": "X-LLM-Key",
+      "provider_header_value": "vercel",
+      "id_format_note": "Gateway slugs use forward-slash provider prefix and DOT in version (e.g. anthropic/claude-opus-4.7).",
+      "models": [
+        {
+          "id": "openai/gpt-4o",
+          "display": "GPT-4o (via Gateway)",
+          "description": "fast, balanced",
+          "underlying_provider": "openai"
+        },
+        {
+          "id": "openai/gpt-4o-mini",
+          "display": "GPT-4o mini (via Gateway)",
+          "description": "cheap, fast",
+          "underlying_provider": "openai"
+        },
+        {
+          "id": "anthropic/claude-haiku-4.5",
+          "display": "Claude Haiku 4.5 (via Gateway)",
+          "description": "fast, cheap",
+          "underlying_provider": "anthropic"
+        },
+        {
+          "id": "anthropic/claude-sonnet-4.6",
+          "display": "Claude Sonnet 4.6 (via Gateway)",
+          "description": "balanced",
+          "underlying_provider": "anthropic"
+        },
+        {
+          "id": "anthropic/claude-opus-4.7",
+          "display": "Claude Opus 4.7 (via Gateway)",
+          "description": "best quality, slower",
+          "underlying_provider": "anthropic"
+        }
+      ]
+    }
+  },
+  "embeddings": {
+    "default_model": "openai/text-embedding-3-small",
+    "dimensions": 1536,
+    "via": "vercel-ai-gateway",
+    "server_env_var": "AI_GATEWAY_API_KEY",
+    "notes": "Server-funded only. Never exposed to the browser. Used at ingestion (embedMany) and query time (embed)."
+  }
+}
