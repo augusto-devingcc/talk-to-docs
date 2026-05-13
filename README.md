@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Talk to Docs
 
-## Getting Started
+Upload PDFs, DOCX, CSV, XLSX, TXT, or MD files. Ask questions. Get answers with citations to the source chunks.
 
-First, run the development server:
+<!-- screenshot here -->
+
+## Stack
+
+- Next.js 16 (App Router, React 19, TypeScript strict)
+- Tailwind CSS v4 + shadcn/ui
+- Neon Postgres + pgvector for chunk storage and vector search
+- Vercel AI Gateway for embeddings (`openai/text-embedding-3-small`, 1536 dims)
+- Multi-provider BYOK for chat: OpenAI, Anthropic, or Vercel AI Gateway
+- File parsing via `unpdf`, `mammoth`, `papaparse`, and `xlsx`
+- SSE streaming for both ingestion progress and chat answers
+
+## Local development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app reads from `.env.local`. You need the following variables:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+DATABASE_URL=postgres://...        # Neon connection string with pgvector
+AI_GATEWAY_API_KEY=vck_...         # Vercel AI Gateway key for embeddings (server-only)
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The database schema (extensions, tables, indexes) is in `SPEC.md` and must be applied to the Neon database before first run.
 
-## Learn More
+## Bring your own key
 
-To learn more about Next.js, take a look at the following resources:
+Chat completions run on a key supplied by the visitor at runtime. The flow:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Visitor picks a provider in the UI (OpenAI, Anthropic, or Vercel AI Gateway).
+2. Visitor pastes a key. The key is stored in `localStorage` under `ttd.<provider>.key`.
+3. On every chat request the browser sends the key as the `X-LLM-Key` header along with `X-LLM-Provider`.
+4. The server uses the key to instantiate the correct SDK client for the duration of the request, then drops it. The key is never written to disk, logs, or the database.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The embeddings key (`AI_GATEWAY_API_KEY`) stays server-side. It is used at ingestion time and at query time to embed retrieval text, and never exposed to the browser.
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `npm run dev` starts the local dev server.
+- `npm run build` produces a production build.
+- `npm run lint` runs ESLint with the Next.js config.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploy
+
+The project is linked to Vercel as `talk-to-docs` under `augusto-6836s-projects`. Pushing to `main` triggers a production deploy. Neon Postgres is provisioned through the Vercel Marketplace; the connection vars are pulled to `.env.local` by `vercel env pull`. Add `AI_GATEWAY_API_KEY` to the Vercel project environment before deploying.
+
+Live demo: TBD on first deploy.
+
+## Author
+
+Built by Augusto García. Source at https://github.com/augusto-devingcc/talk-to-docs.
