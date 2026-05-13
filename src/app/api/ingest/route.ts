@@ -4,6 +4,7 @@ import { embedBatch } from '@/lib/embeddings';
 import { parseFile } from '@/lib/parse';
 import { chunkText } from '@/lib/chunking';
 import { createSSEStream } from '@/lib/sse';
+import { validateKeyForProvider, type Provider } from '@/lib/providers/types';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -11,7 +12,25 @@ export const maxDuration = 300;
 
 type DocumentRow = { id: string };
 
+function parseProvider(value: string | null): Provider | null {
+  if (value === 'openai' || value === 'vercel') return value;
+  return null;
+}
+
 export async function POST(req: NextRequest): Promise<Response> {
+  const provider = parseProvider(req.headers.get('x-llm-provider'));
+  if (!provider) {
+    return Response.json(
+      { error: 'Missing or unsupported X-LLM-Provider header. Use "openai" or "vercel".' },
+      { status: 400 },
+    );
+  }
+  const apiKey = req.headers.get('x-llm-key');
+  const keyCheck = validateKeyForProvider(provider, apiKey);
+  if (!keyCheck.ok) {
+    return Response.json({ error: keyCheck.reason }, { status: 401 });
+  }
+
   let formData: FormData;
   try {
     formData = await req.formData();
@@ -23,6 +42,8 @@ export async function POST(req: NextRequest): Promise<Response> {
   if (files.length === 0) {
     return Response.json({ error: 'No files provided. Use the "files" form field.' }, { status: 400 });
   }
+
+  const embedAuth = { provider, apiKey: apiKey as string };
 
   return createSSEStream(async (write) => {
     const documentIds: string[] = [];
@@ -49,7 +70,7 @@ export async function POST(req: NextRequest): Promise<Response> {
         }
 
         const startedAt = Date.now();
-        const embeddings = await embedBatch(chunks.map((c) => c.content));
+        const embeddings = await embedBatch(chunks.map((c) => c.content), embedAuth);
         if (embeddings.length !== chunks.length) {
           throw new Error('Embedding count did not match chunk count.');
         }

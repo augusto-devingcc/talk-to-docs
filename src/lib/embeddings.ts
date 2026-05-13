@@ -1,28 +1,39 @@
 import { embed as aiEmbed, embedMany } from 'ai';
+import { createGateway } from '@ai-sdk/gateway';
+import { createOpenAI } from '@ai-sdk/openai';
+import type { Provider } from './providers/types';
 
-const EMBEDDING_MODEL = 'openai/text-embedding-3-small';
+export type EmbedAuth = { provider: Provider; apiKey: string };
 
-function ensureGatewayKey(): void {
-  if (!process.env.AI_GATEWAY_API_KEY) {
-    throw new Error('AI_GATEWAY_API_KEY is not set');
+const EMBEDDING_DIMENSIONS = 1536;
+
+function buildEmbeddingModel(auth: EmbedAuth) {
+  if (auth.provider === 'openai') {
+    const client = createOpenAI({ apiKey: auth.apiKey });
+    return client.embedding('text-embedding-3-small');
   }
+  if (auth.provider === 'vercel') {
+    const gateway = createGateway({ apiKey: auth.apiKey });
+    return gateway.textEmbeddingModel('openai/text-embedding-3-small');
+  }
+  throw new Error(`Provider ${auth.provider} does not support embeddings via BYOK`);
 }
 
-export async function embed(text: string): Promise<number[]> {
-  ensureGatewayKey();
+export async function embed(text: string, auth: EmbedAuth): Promise<number[]> {
   const { embedding } = await aiEmbed({
-    model: EMBEDDING_MODEL,
+    model: buildEmbeddingModel(auth),
     value: text,
   });
   return embedding;
 }
 
-export async function embedBatch(texts: string[]): Promise<number[][]> {
-  ensureGatewayKey();
+export async function embedBatch(texts: string[], auth: EmbedAuth): Promise<number[][]> {
   if (texts.length === 0) return [];
   const { embeddings } = await embedMany({
-    model: EMBEDDING_MODEL,
+    model: buildEmbeddingModel(auth),
     values: texts,
   });
   return embeddings;
 }
+
+export { EMBEDDING_DIMENSIONS };

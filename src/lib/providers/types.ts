@@ -1,4 +1,5 @@
 export type ProviderName = 'openai' | 'anthropic' | 'vercel';
+export type Provider = ProviderName;
 
 export type ChatMessage = {
   role: 'system' | 'user' | 'assistant';

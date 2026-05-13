@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ai-sdk/gateway": "^3.0.114",
+    "@ai-sdk/openai": "^3.0.63",
     "@anthropic-ai/sdk": "^0.96.0",
     "ai": "^6.0.182",
     "class-variance-authority": "^0.7.1",

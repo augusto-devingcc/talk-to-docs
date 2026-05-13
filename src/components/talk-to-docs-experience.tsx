@@ -186,6 +186,10 @@ export function TalkToDocsExperience() {
 
   const startIngest = useCallback(async () => {
     if (files.length === 0 || isUploading) return;
+    if (!apiKey) {
+      setUploadError(`Add your ${providerEntry.display_name} API key first. The key is used to compute embeddings for your documents.`);
+      return;
+    }
     uploadAbortRef.current?.abort();
     setUploadError(null);
     setUploadProgress(
@@ -202,6 +206,10 @@ export function TalkToDocsExperience() {
       const res = await fetch("/api/ingest", {
         method: "POST",
         body: fd,
+        headers: {
+          "X-LLM-Provider": provider,
+          "X-LLM-Key": apiKey,
+        },
         signal: controller.signal,
       });
       if (!res.ok || !res.body) {
@@ -232,7 +240,7 @@ export function TalkToDocsExperience() {
     } finally {
       setIsUploading(false);
     }
-  }, [files, isUploading, handleIngestEvent, refreshDocuments]);
+  }, [files, isUploading, handleIngestEvent, refreshDocuments, apiKey, provider, providerEntry.display_name]);
 
   const handleDeleteDocument = useCallback(
     async (id: string) => {
@@ -468,8 +476,9 @@ export function TalkToDocsExperience() {
                   <Button
                     type="button"
                     onClick={startIngest}
-                    disabled={isUploading || files.length === 0}
-                    className="h-10 bg-[#fbbf24] text-[#1c1304] hover:bg-[#f59e0b] font-medium"
+                    disabled={isUploading || files.length === 0 || !apiKey}
+                    className="h-10 bg-[#fbbf24] text-[#1c1304] hover:bg-[#f59e0b] font-medium disabled:opacity-50"
+                    title={!apiKey ? `Add a ${providerEntry.display_name} key first` : undefined}
                   >
                     {isUploading ? (
                       <>

@@ -70,10 +70,22 @@ export async function POST(req: NextRequest): Promise<Response> {
     return Response.json({ error: validation.reason }, { status: 401 });
   }
 
+  if (providerName === 'anthropic') {
+    return Response.json(
+      {
+        error:
+          'Anthropic does not expose an embeddings API. Use "openai" or "vercel" as the provider for this demo.',
+      },
+      { status: 400 },
+    );
+  }
+
+  const embedAuth = { provider: providerName, apiKey: apiKey as string };
+
   return createSSEStream(async (write) => {
     await write('retrieval_start', { question });
 
-    const queryEmbedding = await embed(question);
+    const queryEmbedding = await embed(question, embedAuth);
     const literal = toVectorLiteral(queryEmbedding);
 
     const { rows } = await query<ChunkRow>(
