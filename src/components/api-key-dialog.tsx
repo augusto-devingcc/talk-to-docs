@@ -32,10 +32,6 @@ const KEY_HELP: Record<ProviderId, { href: string; label: string }> = {
     href: "https://platform.openai.com/api-keys",
     label: "platform.openai.com/api-keys",
   },
-  anthropic: {
-    href: "https://console.anthropic.com/settings/keys",
-    label: "console.anthropic.com/settings/keys",
-  },
   vercel: {
     href: "https://vercel.com/dashboard/ai-gateway/api-keys",
     label: "vercel.com/dashboard/ai-gateway/api-keys",
@@ -44,7 +40,6 @@ const KEY_HELP: Record<ProviderId, { href: string; label: string }> = {
 
 const PLACEHOLDERS: Record<ProviderId, string> = {
   openai: "sk-...",
-  anthropic: "sk-ant-api03-...",
   vercel: "vck_...",
 };
 

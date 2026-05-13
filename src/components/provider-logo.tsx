@@ -1,7 +1,7 @@
-import type { ProviderId } from "@/lib/use-api-key";
+export type LogoKind = "openai" | "anthropic" | "vercel";
 
 type Props = {
-  provider: ProviderId;
+  provider: LogoKind;
   className?: string;
 };
 
@@ -34,4 +34,12 @@ export function ProviderLogo({ provider, className }: Props) {
         </svg>
       );
   }
+}
+
+export function logoKindFromPath(path: string | undefined): LogoKind | null {
+  if (!path) return null;
+  if (path.includes("openai")) return "openai";
+  if (path.includes("anthropic")) return "anthropic";
+  if (path.includes("vercel")) return "vercel";
+  return null;
 }

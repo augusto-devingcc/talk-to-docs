@@ -4,10 +4,10 @@ import { useCallback, useEffect, useState } from "react";
 import type { ProviderId } from "./use-api-key";
 
 const STORAGE_KEY = "ttd.provider";
-const DEFAULT_PROVIDER: ProviderId = "anthropic";
+const DEFAULT_PROVIDER: ProviderId = "vercel";
 
 function isValidProvider(value: string | null): value is ProviderId {
-  return value === "openai" || value === "anthropic" || value === "vercel";
+  return value === "openai" || value === "vercel";
 }
 
 export function useProvider() {

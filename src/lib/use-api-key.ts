@@ -2,23 +2,20 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-export type ProviderId = "openai" | "anthropic" | "vercel";
+export type ProviderId = "openai" | "vercel";
 
 const STORAGE_KEYS: Record<ProviderId, string> = {
   openai: "ttd.openai.key",
-  anthropic: "ttd.anthropic.key",
   vercel: "ttd.vercel.key",
 };
 
 const KEY_PREFIXES: Record<ProviderId, string> = {
   openai: "sk-",
-  anthropic: "sk-ant-",
   vercel: "vck_",
 };
 
 const KEY_LABELS: Record<ProviderId, string> = {
   openai: "OpenAI",
-  anthropic: "Anthropic",
   vercel: "Vercel AI Gateway",
 };
 

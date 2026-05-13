@@ -5,6 +5,7 @@ export type ModelEntry = {
   id: string;
   display: string;
   description: string;
+  logo?: string;
 };
 
 export type ProviderEntry = {
@@ -13,6 +14,7 @@ export type ProviderEntry = {
   logo: string;
   key_prefix: string;
   key_format: string;
+  description?: string;
   models: ModelEntry[];
 };
 
@@ -21,10 +23,12 @@ type RawProvider = {
   logo: string;
   key_prefix: string;
   key_format: string;
+  description?: string;
   models: Array<{
     id: string;
     display: string;
     description: string;
+    logo?: string;
   }>;
 };
 
@@ -32,23 +36,23 @@ const RAW = modelsCatalog as {
   providers: Record<ProviderId, RawProvider>;
 };
 
-export const PROVIDERS: ProviderEntry[] = (["openai", "anthropic", "vercel"] as ProviderId[]).map(
-  (id) => {
-    const p = RAW.providers[id];
-    return {
-      id,
-      display_name: p.display_name,
-      logo: p.logo,
-      key_prefix: p.key_prefix,
-      key_format: p.key_format,
-      models: p.models.map((m) => ({
-        id: m.id,
-        display: m.display,
-        description: m.description,
-      })),
-    };
-  }
-);
+export const PROVIDERS: ProviderEntry[] = (["openai", "vercel"] as ProviderId[]).map((id) => {
+  const p = RAW.providers[id];
+  return {
+    id,
+    display_name: p.display_name,
+    logo: p.logo,
+    key_prefix: p.key_prefix,
+    key_format: p.key_format,
+    description: p.description,
+    models: p.models.map((m) => ({
+      id: m.id,
+      display: m.display,
+      description: m.description,
+      logo: m.logo,
+    })),
+  };
+});
 
 export function getProvider(id: ProviderId): ProviderEntry {
   const found = PROVIDERS.find((p) => p.id === id);
@@ -65,11 +69,11 @@ export function defaultModelFor(id: ProviderId): string {
 }
 
 export function providerShortDescription(id: ProviderId): string {
+  const p = getProvider(id);
+  if (p.description) return p.description;
   switch (id) {
     case "openai":
       return "Route direct to OpenAI with your sk- key.";
-    case "anthropic":
-      return "Route direct to Anthropic with your sk-ant- key.";
     case "vercel":
       return "Unified gateway across OpenAI and Anthropic. Uses a vck_ key.";
   }

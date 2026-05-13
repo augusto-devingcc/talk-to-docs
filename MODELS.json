@@ -10,52 +10,28 @@
       "key_prefix": "sk-",
       "header_name": "X-LLM-Key",
       "provider_header_value": "openai",
+      "description": "Route direct to OpenAI with your sk- key. OpenAI models only.",
       "models": [
         {
-          "id": "gpt-4o",
-          "display": "GPT-4o",
-          "description": "fast and balanced",
-          "context_window": 128000
+          "id": "gpt-5.4",
+          "display": "GPT-5.4",
+          "description": "top tier",
+          "logo": "/logos/openai.svg",
+          "context_window": 400000
         },
         {
-          "id": "gpt-4o-mini",
-          "display": "GPT-4o mini",
-          "description": "cheap and fast",
-          "context_window": 128000
-        }
-      ]
-    },
-    "anthropic": {
-      "display_name": "Anthropic",
-      "logo": "/logos/anthropic.svg",
-      "auth": "direct",
-      "sdk_package": "@anthropic-ai/sdk",
-      "key_format": "sk-ant-...",
-      "key_prefix": "sk-ant-",
-      "header_name": "X-LLM-Key",
-      "provider_header_value": "anthropic",
-      "id_format_note": "Direct Anthropic API uses DASH between major and minor (claude-opus-4-7). Vercel Gateway uses DOT (anthropic/claude-opus-4.7). Do not confuse them.",
-      "models": [
-        {
-          "id": "claude-haiku-4-5",
-          "display": "Claude Haiku 4.5",
-          "description": "fast, cheap",
-          "alias_resolves_to": "claude-haiku-4-5-20251001",
-          "context_window": 200000
-        },
-        {
-          "id": "claude-sonnet-4-6",
-          "display": "Claude Sonnet 4.6",
+          "id": "gpt-5.4-mini",
+          "display": "GPT-5.4 mini",
           "description": "balanced default",
-          "alias_resolves_to": "claude-sonnet-4-6",
-          "context_window": 200000
+          "logo": "/logos/openai.svg",
+          "context_window": 400000
         },
         {
-          "id": "claude-opus-4-7",
-          "display": "Claude Opus 4.7",
-          "description": "best quality, slower",
-          "alias_resolves_to": "claude-opus-4-7",
-          "context_window": 200000
+          "id": "gpt-5.4-nano",
+          "display": "GPT-5.4 nano",
+          "description": "fastest, cheapest",
+          "logo": "/logos/openai.svg",
+          "context_window": 400000
         }
       ]
     },
@@ -69,36 +45,49 @@
       "key_prefix": "vck_",
       "header_name": "X-LLM-Key",
       "provider_header_value": "vercel",
+      "description": "Unified gateway across OpenAI and Anthropic with your Vercel gateway key.",
       "id_format_note": "Gateway slugs use forward-slash provider prefix and DOT in version (e.g. anthropic/claude-opus-4.7).",
       "models": [
         {
-          "id": "openai/gpt-4o",
-          "display": "GPT-4o (via Gateway)",
-          "description": "fast, balanced",
+          "id": "openai/gpt-5.4",
+          "display": "GPT-5.4",
+          "description": "via Gateway, top tier",
+          "logo": "/logos/openai.svg",
           "underlying_provider": "openai"
         },
         {
-          "id": "openai/gpt-4o-mini",
-          "display": "GPT-4o mini (via Gateway)",
-          "description": "cheap, fast",
+          "id": "openai/gpt-5.4-mini",
+          "display": "GPT-5.4 mini",
+          "description": "via Gateway, balanced default",
+          "logo": "/logos/openai.svg",
+          "underlying_provider": "openai"
+        },
+        {
+          "id": "openai/gpt-5.4-nano",
+          "display": "GPT-5.4 nano",
+          "description": "via Gateway, cheap and fast",
+          "logo": "/logos/openai.svg",
           "underlying_provider": "openai"
         },
         {
           "id": "anthropic/claude-haiku-4.5",
-          "display": "Claude Haiku 4.5 (via Gateway)",
-          "description": "fast, cheap",
+          "display": "Claude Haiku 4.5",
+          "description": "via Gateway, fast and cheap",
+          "logo": "/logos/anthropic.svg",
           "underlying_provider": "anthropic"
         },
         {
           "id": "anthropic/claude-sonnet-4.6",
-          "display": "Claude Sonnet 4.6 (via Gateway)",
-          "description": "balanced",
+          "display": "Claude Sonnet 4.6",
+          "description": "via Gateway, balanced",
+          "logo": "/logos/anthropic.svg",
           "underlying_provider": "anthropic"
         },
         {
           "id": "anthropic/claude-opus-4.7",
-          "display": "Claude Opus 4.7 (via Gateway)",
-          "description": "best quality, slower",
+          "display": "Claude Opus 4.7",
+          "description": "via Gateway, top tier",
+          "logo": "/logos/anthropic.svg",
           "underlying_provider": "anthropic"
         }
       ]

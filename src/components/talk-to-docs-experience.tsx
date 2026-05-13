@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { ApiKeyDialog } from "./api-key-dialog";
 import { ProviderCard } from "./provider-card";
+import { ProviderLogo, logoKindFromPath } from "./provider-logo";
 import { FileDrop } from "./file-drop";
 import { DocumentRow, type DocumentSummary } from "./document-row";
 import { ChatPanel } from "./chat-panel";
@@ -63,7 +64,7 @@ export function TalkToDocsExperience() {
   // for in state, and reset the model whenever the provider changes. This is
   // the React-recommended pattern for derived state (see
   // https://react.dev/reference/react/useState#storing-information-from-previous-renders).
-  const [model, setModel] = useState<string>(() => defaultModelFor("anthropic"));
+  const [model, setModel] = useState<string>(() => defaultModelFor("vercel"));
   const [modelProvider, setModelProvider] = useState<ProviderId>(provider);
   if (modelProvider !== provider) {
     setModelProvider(provider);
@@ -391,7 +392,7 @@ export function TalkToDocsExperience() {
                 <Label className="text-xs uppercase tracking-wider text-[#a1a1aa] font-mono mb-3 block">
                   Provider
                 </Label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {PROVIDERS.map((p) => (
                     <ProviderCard
                       key={p.id}
@@ -428,18 +429,24 @@ export function TalkToDocsExperience() {
                     <SelectValue placeholder="Pick a model" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#18181b] border-[#27272a] text-[#fafafa]">
-                    {providerEntry.models.map((m) => (
-                      <SelectItem
-                        key={m.id}
-                        value={m.id}
-                        className="focus:bg-[#27272a] focus:text-[#fafafa]"
-                      >
-                        <span className="font-medium">{m.display}</span>
-                        <span className="text-[#a1a1aa] text-xs ml-2">
-                          {m.description}
-                        </span>
-                      </SelectItem>
-                    ))}
+                    {providerEntry.models.map((m) => {
+                      const kind = logoKindFromPath(m.logo);
+                      return (
+                        <SelectItem
+                          key={m.id}
+                          value={m.id}
+                          className="focus:bg-[#27272a] focus:text-[#fafafa]"
+                        >
+                          <span className="inline-flex items-center gap-2">
+                            {kind && <ProviderLogo provider={kind} className="h-3.5 w-3.5 text-[#a1a1aa]" />}
+                            <span className="font-medium">{m.display}</span>
+                            <span className="text-[#a1a1aa] text-xs">
+                              {m.description}
+                            </span>
+                          </span>
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </section>
